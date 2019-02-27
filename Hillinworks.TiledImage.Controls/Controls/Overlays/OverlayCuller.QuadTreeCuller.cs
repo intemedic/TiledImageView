@@ -97,6 +97,8 @@ namespace Hillinworks.TiledImage.Controls.Overlays
                 }
                 else if (intersection == Intersection.Intersect)
                 {
+                    var elementCount = elements.Count;
+
                     var viewPosition = context.ViewState.WorldToViewMatrix.Transform(ToWpfPoint(node.Point));
                     if (context.CullRect.Contains(viewPosition) && node.Element != null)
                     {
@@ -114,6 +116,16 @@ namespace Hillinworks.TiledImage.Controls.Overlays
                     foreach (var subnode in node.Subnodes)
                     {
                         CullRecursive(elements, context, subnode);
+                    }
+
+                    if (elements.Count == elementCount && node.Element != null)
+                    {
+                        // This is a special case where the element does intersect with the cull rect,
+                        // however none of its vertices is contained by the cull rect (i.e. only one edge
+                        // of the element's bounding rectangle intersects with the cull rect). By tracking
+                        // the added element count (an intersection exists, but no element was added),
+                        // we can detect this case.
+                        elements.Add(node.Element.Element);
                     }
                 }
 #if DEBUG_PRINT_CULLING_PROCESS

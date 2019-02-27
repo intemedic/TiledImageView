@@ -58,6 +58,7 @@
     <Compile Include="Controls\CullerBase.CullContext.cs" />
     <Compile Include="Controls\CullerBase.Intersection.cs" />
     <Compile Include="Controls\Overlays\Direction.cs" />
+    <Compile Include="Controls\Overlays\DirectionExtensions.cs" />
     <Compile Include="Controls\Overlays\OverlayCuller.cs" />
     <Compile Include="Controls\Overlays\OverlayCuller.QuadTreeCuller.cs" />
     <Compile Include="Controls\Overlays\OverlayCuller.QuadTreeItem.cs" />

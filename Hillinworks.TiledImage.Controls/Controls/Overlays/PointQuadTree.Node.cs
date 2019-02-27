@@ -16,7 +16,7 @@ namespace Hillinworks.TiledImage.Controls.Overlays
     }
 #endif
 
-    partial class PointQuadTree<T>
+    internal partial class PointQuadTree<T>
     {
         [DebuggerDisplay("QuadTreeNode {DebugDisplayName}: {Element}")]
         public class Node
@@ -58,7 +58,7 @@ namespace Hillinworks.TiledImage.Controls.Overlays
             {
                 this.DebugQualifiedName = this.Parent == null
                     ? relativeIdentifier
-                    : $"{this.Parent.DebugQualifiedName}.{relativeIdentifier}";
+                    : $"{this.Parent.DebugQualifiedName}.({relativeIdentifier})";
             }
 
             public Node GetSubnode(Direction direction)
@@ -109,7 +109,7 @@ namespace Hillinworks.TiledImage.Controls.Overlays
                 if (this.SubnodeArray[index] == null)
                 {
                     var subnode = new Node(this.Tree, this, item);
-                    subnode.SetDebugIdentifier(direction.ToString());
+                    subnode.SetDebugIdentifier(direction.ToDirectionString());
                     this.SubnodeArray[index] = subnode;
                 }
                 else
