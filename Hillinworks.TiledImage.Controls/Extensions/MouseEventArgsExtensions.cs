@@ -1,11 +1,8 @@
-﻿
-
-
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Hillinworks.TiledImage.Extensions
 {
-	public static class MouseEventArgsExtensions
+	internal static class MouseEventArgsExtensions
 	{
 		public static bool CheckMouseButtonStates(
 			this MouseEventArgs e,
