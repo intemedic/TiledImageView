@@ -68,7 +68,7 @@ namespace Hillinworks.TiledImage.Imaging
                     var index = new TileIndex.Full(column, row, finalLayer, finalLodLevel);
                     var tileImage = await imageSource.LoadTileAsync(index, cancellationToken: cancellationToken);
 
-                    var copyMetricsX = ImageCopyMetrics.Calculate(tileLeft, tileRight, bounds.X, bounds.Height);
+                    var copyMetricsX = ImageCopyMetrics.Calculate(tileLeft, tileRight, bounds.X, bounds.Width);
 
                     var sourceRect = new Int32Rect(
                         copyMetricsX.Source,
