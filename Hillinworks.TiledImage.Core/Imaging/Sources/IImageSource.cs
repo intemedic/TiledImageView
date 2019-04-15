@@ -25,12 +25,21 @@ namespace Hillinworks.TiledImage.Imaging.Sources
             TileIndex.Full index,
             IProgress<double> progress = null,
             CancellationToken cancellationToken = default);
-        
+
         Task<BitmapSource> LoadNamedImageAsync(
             string name,
             IProgress<double> progress = null,
             CancellationToken cancellationToken = default);
 
-        Task<BitmapSource> CreateThumbnailAsync(double width, double height);
+        /// <summary>
+        /// Create a thumbnail of the whole image.
+        /// </summary>
+        /// <remarks>
+        /// The thumbnail will have the smallest possible size larger than <paramref name="minWidth"/> and <paramref name="minHeight"/>.
+        /// </remarks>
+        Task<BitmapSource> CreateThumbnailAsync(
+            double minWidth,
+            double minHeight,
+            CancellationToken cancellationToken = default);
     }
 }

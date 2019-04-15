@@ -49,7 +49,10 @@ namespace Hillinworks.TiledImage.Imaging.Sources
             return Task.FromResult((BitmapSource)null);
         }
 
-        public Task<BitmapSource> CreateThumbnailAsync(double width, double height)
+        public Task<BitmapSource> CreateThumbnailAsync(
+            double minWidth, 
+            double minHeight, 
+            CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
