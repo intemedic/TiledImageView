@@ -7,7 +7,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Hillinworks.TiledImage.Controls.Overlays;
 using Hillinworks.TiledImage.Imaging;
 using Hillinworks.TiledImage.Imaging.Sources;
@@ -45,6 +44,10 @@ namespace Hillinworks.TiledImage.Controls
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     OnOverlaysChanged));
 
+        /// <remarks>
+        ///     <see cref="FitZoomLevel" /> and <see cref="Centralize" /> depend on ActualHeight/ActualWidth.
+        ///     But they maybe zero when OnSourceChanged.
+        /// </remarks>
         private bool _isRenderViewportDeferred;
 
         static TiledImageView()
@@ -61,19 +64,19 @@ namespace Hillinworks.TiledImage.Controls
 
         public IEnumerable<IOverlay> Overlays
         {
-            get => (IEnumerable<IOverlay>)this.GetValue(OverlaysProperty);
+            get => (IEnumerable<IOverlay>) this.GetValue(OverlaysProperty);
             set => this.SetValue(OverlaysProperty, value);
         }
 
         public Size ExtentSize
         {
-            get => (Size)this.GetValue(ExtentSizeProperty);
+            get => (Size) this.GetValue(ExtentSizeProperty);
             internal set => this.SetValue(ExtentSizePropertyKey, value);
         }
 
         public IImageSource Source
         {
-            get => (IImageSource)this.GetValue(SourceProperty);
+            get => (IImageSource) this.GetValue(SourceProperty);
             set => this.SetValue(SourceProperty, value);
         }
 
@@ -85,7 +88,8 @@ namespace Hillinworks.TiledImage.Controls
 
         private static void OnOverlaysChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((TiledImageView)d).OnOverlaysChanged((IEnumerable<IOverlay>)e.OldValue, (IEnumerable<IOverlay>)e.NewValue);
+            ((TiledImageView) d).OnOverlaysChanged((IEnumerable<IOverlay>) e.OldValue,
+                (IEnumerable<IOverlay>) e.NewValue);
         }
 
         private void OnOverlaysChanged(IEnumerable<IOverlay> oldValue, IEnumerable<IOverlay> newValue)
@@ -119,6 +123,7 @@ namespace Hillinworks.TiledImage.Controls
             {
                 control.ImageView = this;
             }
+
             overlay.OnLayerChanged(this.Layer);
             overlay.OnViewStateChanged(this.ViewState);
         }
@@ -147,7 +152,7 @@ namespace Hillinworks.TiledImage.Controls
 
         private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((TiledImageView)d).OnSourceChanged((IImageSource)e.NewValue);
+            ((TiledImageView) d).OnSourceChanged((IImageSource) e.NewValue);
         }
 
         private void OnSourceChanged(IImageSource source)
@@ -165,7 +170,7 @@ namespace Hillinworks.TiledImage.Controls
                 this.ViewState = new ImageViewState(this);
                 this.TilesManager = new ImageTilesManager(this);
                 this.ViewState.Initialize();
-                if ( this.ActualHeight == 0 || this.ActualWidth == 0)
+                if (this.ActualHeight == 0 || this.ActualWidth == 0)
                 {
                     _isRenderViewportDeferred = true;
                 }
@@ -194,6 +199,7 @@ namespace Hillinworks.TiledImage.Controls
                 this.RenderViewPort();
                 _isRenderViewportDeferred = false;
             }
+
             this.UpdateScrollability();
             this.TilesManager?.UpdateTiles();
         }
@@ -261,7 +267,7 @@ namespace Hillinworks.TiledImage.Controls
                         switch (tile.LoadTask.Status)
                         {
                             case LoadTileStatus.Loading:
-                                builder.AppendLine($"{(int)(tile.LoadTask.LoadProgress * 100)}%");
+                                builder.AppendLine($"{(int) (tile.LoadTask.LoadProgress * 100)}%");
                                 break;
                             case LoadTileStatus.Failed:
                                 builder.AppendLine($"Failed: {tile.LoadTask.ErrorMessage}");
