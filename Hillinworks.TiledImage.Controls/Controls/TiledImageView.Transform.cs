@@ -148,7 +148,7 @@ namespace Hillinworks.TiledImage.Controls
 
         private void UpdateMinimumZoomLevel()
         {
-            this.MinimumZoomLevel = this.Source == null ? 1 : Math.Max(0.5, this.Source.LOD.MinZoomLevel * this.MaximumUnderZoomFactor);
+            this.MinimumZoomLevel = this.Source == null ? 1 : 0.1;
         }
 
         private static void OnMaximumOverZoomFactorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -171,7 +171,9 @@ namespace Hillinworks.TiledImage.Controls
 
         private void UpdateMaximumZoomLevel()
         {
-            this.MaximumZoomLevel = this.Source == null ? 1 : this.Source.LOD.MaxZoomLevel * this.MaximumOverZoomFactor;
+            this.MaximumZoomLevel = this.Source == null
+                ? 1
+                : Math.Max(40, this.Source.LOD.MaxZoomLevel * this.MaximumOverZoomFactor);
         }
 
         private static object CoerceRotation(DependencyObject d, object baseValue)
@@ -361,6 +363,20 @@ namespace Hillinworks.TiledImage.Controls
         private void Translate(Vector translation)
         {
             this.Offset = translation;
+        }
+
+        public void FitZoomLevel()
+        {
+            this.Zoom(this.CalculatorFitZoomLevel(), this.CenterPoint);
+        }
+
+        private double CalculatorFitZoomLevel()
+        {
+            var margin = 100;
+            var heightScale = (this.ActualHeight - margin) / this.Source.Dimensions.ContentHeight;
+            var widthScale = (this.ActualWidth - margin) / this.Source.Dimensions.ContentWidth;
+
+            return this.Source.LOD.MaxZoomLevel * (heightScale > widthScale ? widthScale : heightScale);
         }
     }
 }
