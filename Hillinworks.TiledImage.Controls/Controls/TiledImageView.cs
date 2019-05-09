@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ using Hillinworks.TiledImage.Properties;
 
 namespace Hillinworks.TiledImage.Controls
 {
+    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     public partial class TiledImageView : Control
     {
         public static readonly DependencyProperty SourceProperty =
@@ -42,6 +44,8 @@ namespace Hillinworks.TiledImage.Controls
                     null,
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     OnOverlaysChanged));
+
+        private bool _isRenderViewportDeferred;
 
         static TiledImageView()
         {
@@ -161,8 +165,14 @@ namespace Hillinworks.TiledImage.Controls
                 this.ViewState = new ImageViewState(this);
                 this.TilesManager = new ImageTilesManager(this);
                 this.ViewState.Initialize();
-                this.Zoom(source.LOD.InitialZoomLevel, this.CenterPoint);
-                this.Centralize();
+                if ( this.ActualHeight == 0 || this.ActualWidth == 0)
+                {
+                    _isRenderViewportDeferred = true;
+                }
+                else
+                {
+                    this.RenderViewPort();
+                }
             }
 
             this.OnViewStateChanged();
@@ -170,10 +180,20 @@ namespace Hillinworks.TiledImage.Controls
             this.UpdateScrollability();
         }
 
+        private void RenderViewPort()
+        {
+            this.FitZoomLevel();
+            this.Centralize();
+        }
+
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);
-
+            if (_isRenderViewportDeferred)
+            {
+                this.RenderViewPort();
+                _isRenderViewportDeferred = false;
+            }
             this.UpdateScrollability();
             this.TilesManager?.UpdateTiles();
         }

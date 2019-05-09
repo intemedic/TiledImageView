@@ -12,14 +12,23 @@ namespace Hillinworks.TiledImage.Controls
         public static RoutedUICommand CentralizeCommand { get; }
             = new RoutedUICommand("Centralize", "TiledImageView.Centralize", typeof(TiledImageView));
 
+        public static RoutedUICommand FitZoomLevelCommand { get; }
+            = new RoutedUICommand("FitZoomLevel", "TiledImageView.FitZoomLevel", typeof(TiledImageView));
+
         private void InitializeCommandBindings()
         {
             this.CommandBindings.Add(new CommandBinding(CentralizeCommand, this.ExecuteCentralizeCommand));
+            this.CommandBindings.Add(new CommandBinding(FitZoomLevelCommand, this.ExecuteFitZoomLevelCommand));
         }
 
         private void ExecuteCentralizeCommand(object sender, ExecutedRoutedEventArgs e)
         {
             this.Centralize(e.Parameter is Point point ? (Point?)point : null);
+        }
+
+        private void ExecuteFitZoomLevelCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.FitZoomLevel();
         }
     }
 }
