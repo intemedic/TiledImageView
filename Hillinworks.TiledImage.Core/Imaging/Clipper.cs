@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,13 +14,22 @@ namespace Hillinworks.TiledImage.Imaging
         private static unsafe void ClearBackBuffer(this WriteableBitmap bitmap)
         {
             var length = bitmap.PixelHeight * bitmap.BackBufferStride;
-            var pBuffer = (byte*)bitmap.BackBuffer;
+            var pBuffer = (byte*) bitmap.BackBuffer;
             for (var i = 0; i < length; ++i, ++pBuffer)
             {
                 *pBuffer = 0xff;
             }
         }
 
+        /// <summary>
+        ///     Capture a clip from the image.
+        /// </summary>
+        /// <param name="imageSource">The image source to clip from.</param>
+        /// <param name="bounds">The boundary to clip, in specified LOD space.</param>
+        /// <param name="layer">The layer to clip.</param>
+        /// <param name="lodLevel">The LOD level to clip.</param>
+        /// <param name="cancellationToken">A token to cancel this task.</param>
+        /// <returns>An async task which captures the clip.</returns>
         public static async Task<BitmapSource> ClipAsync(
             this IImageSource imageSource,
             Int32Rect bounds,
@@ -31,14 +37,14 @@ namespace Hillinworks.TiledImage.Imaging
             int? lodLevel = null,
             CancellationToken cancellationToken = default)
         {
+            var finalLayer = layer ?? imageSource.Dimensions.MinimumLayerIndex;
+            var finalLodLevel = lodLevel ?? imageSource.LOD.MinLODLevel;
+
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (imageSource is INativeClippable nativeClippable)
             {
-                return await nativeClippable.ClipAsync(bounds, layer, lodLevel, cancellationToken);
+                return await nativeClippable.ClipAsync(bounds, finalLayer, finalLodLevel, cancellationToken);
             }
-
-            var finalLayer = layer ?? imageSource.Dimensions.MinimumLayerIndex;
-            var finalLodLevel = lodLevel ?? imageSource.LOD.MinLODLevel;
 
             var dimensions = imageSource.GetLODDimensions(finalLodLevel);
 
@@ -58,7 +64,11 @@ namespace Hillinworks.TiledImage.Imaging
                 var tileTop = row * tileHeight;
                 var tileBottom = (row + 1) * tileHeight;
 
-                var copyMetricsY = ImageCopyMetrics.Calculate(tileTop, tileBottom, bounds.Y, bounds.Height);
+                var copyMetricsY = ImageCopyMetrics.Calculate(
+                    tileTop,
+                    tileBottom,
+                    bounds.Y,
+                    bounds.Height);
 
                 for (var column = tileIndexLeft; column <= tileIndexRight; ++column)
                 {
@@ -68,7 +78,11 @@ namespace Hillinworks.TiledImage.Imaging
                     var index = new TileIndex.Full(column, row, finalLayer, finalLodLevel);
                     var tileImage = await imageSource.LoadTileAsync(index, cancellationToken: cancellationToken);
 
-                    var copyMetricsX = ImageCopyMetrics.Calculate(tileLeft, tileRight, bounds.X, bounds.Width);
+                    var copyMetricsX = ImageCopyMetrics.Calculate(
+                        tileLeft,
+                        tileRight,
+                        bounds.X,
+                        bounds.Width);
 
                     var sourceRect = new Int32Rect(
                         copyMetricsX.Source,
@@ -88,7 +102,14 @@ namespace Hillinworks.TiledImage.Imaging
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var image = new WriteableBitmap(bounds.Width, bounds.Height, 96, 96, PixelFormats.Bgr24, null);
+            var image = new WriteableBitmap(
+                bounds.Width,
+                bounds.Height,
+                96,
+                96,
+                PixelFormats.Bgr24,
+                null);
+
             image.ClearBackBuffer();
 
             foreach (var request in copyPixelRequests)
@@ -97,7 +118,11 @@ namespace Hillinworks.TiledImage.Imaging
 
                 var source = request.TileImage.Format == PixelFormats.Bgr24
                     ? request.TileImage
-                    : new FormatConvertedBitmap(request.TileImage, PixelFormats.Bgr24, null, 0);
+                    : new FormatConvertedBitmap(
+                        request.TileImage,
+                        PixelFormats.Bgr24,
+                        null,
+                        0);
 
                 source.CopyPixels(
                     request.SourceRect,

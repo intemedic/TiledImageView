@@ -9,8 +9,8 @@ namespace Hillinworks.TiledImage.Imaging
     {
         Task<BitmapSource> ClipAsync(
             Int32Rect bounds,
-            int? layer = null,
-            int? lodLevel = null,
+            int layer,
+            int lodLevel,
             CancellationToken cancellationToken = default);
     }
 }
