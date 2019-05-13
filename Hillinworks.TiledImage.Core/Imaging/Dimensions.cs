@@ -97,17 +97,17 @@ namespace Hillinworks.TiledImage.Imaging
 
         public Dimensions AtLODLevel(LODInfo lod, int lodLevel)
         {
-            var lodFactor = (int)lod.GetLODToWorldScale(lodLevel);
+            var lodFactor = lod.GetLODToWorldScale(lodLevel);
             return new Dimensions(
-                Math.Max(1, this.HorizontalTiles / lodFactor),
-                Math.Max(1, this.VerticalTiles / lodFactor),
+                Math.Max(1, (int)Math.Ceiling(this.HorizontalTiles / lodFactor)),
+                Math.Max(1, (int)Math.Ceiling(this.VerticalTiles / lodFactor)),
                 this.TileWidth,
                 this.TileHeight,
                 this.LayerCount,
-                this.ContentLeft / lodFactor,
-                this.ContentTop / lodFactor,
-                this.ContentWidth / lodFactor,
-                this.ContentHeight / lodFactor);
+                (int)(this.ContentLeft / lodFactor),
+                (int)(this.ContentTop / lodFactor),
+                (int)Math.Ceiling((this.ContentLeft + this.ContentWidth) / lodFactor) - (int)(this.ContentLeft / lodFactor),
+                (int)Math.Ceiling((this.ContentTop + this.ContentHeight) / lodFactor) - (int)(this.ContentTop / lodFactor));
         }
 
         internal void Validate()
