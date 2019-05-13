@@ -365,16 +365,23 @@ namespace Hillinworks.TiledImage.Controls
             this.Offset = translation;
         }
 
-        public void FitZoomLevel()
+        public void FitZoomLevel(Size size = default)
         {
-            this.Zoom(this.CalculatorFitZoomLevel(), this.CenterPoint);
+            double height = this.Source.Dimensions.ContentHeight;
+            double width = this.Source.Dimensions.ContentWidth;
+            if (size != default)
+            {
+                height = size.Height;
+                width = size.Width;
+            }
+            this.Zoom(this.CalculatorFitZoomLevel(height, width), this.CenterPoint);
         }
 
-        private double CalculatorFitZoomLevel()
+        private double CalculatorFitZoomLevel(double zoomHeight, double zoomWidth)
         {
             var margin = 100;
-            var heightScale = (this.ActualHeight - margin) / this.Source.Dimensions.ContentHeight;
-            var widthScale = (this.ActualWidth - margin) / this.Source.Dimensions.ContentWidth;
+            var heightScale = (this.ActualHeight - margin) / zoomHeight;
+            var widthScale = (this.ActualWidth - margin) / zoomWidth;
 
             return this.Source.LOD.MaxZoomLevel * (heightScale > widthScale ? widthScale : heightScale);
         }
