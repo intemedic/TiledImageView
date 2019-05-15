@@ -23,6 +23,7 @@ namespace Hillinworks.TiledImage.Controls
 
         private void ExecuteCentralizeCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            this.Centralize();
         }
 
         private void ExecuteFitZoomLevelCommand(object sender, ExecutedRoutedEventArgs e)
